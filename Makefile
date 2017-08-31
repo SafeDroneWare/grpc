@@ -795,6 +795,7 @@ PROTOBUF_PKG_CONFIG = true
 PC_REQUIRES_GRPCXX = protobuf
 CPPFLAGS := $(shell $(PKG_CONFIG) --cflags protobuf) $(CPPFLAGS)
 LDFLAGS_PROTOBUF_PKG_CONFIG = $(shell $(PKG_CONFIG) --libs-only-L protobuf)
+PROTOC += $(shell $(PKG_CONFIG) --cflags-only-I protobuf)
 ifeq ($(SYSTEM),Linux)
 ifneq ($(LDFLAGS_PROTOBUF_PKG_CONFIG),)
 LDFLAGS_PROTOBUF_PKG_CONFIG += $(shell $(PKG_CONFIG) --libs-only-L protobuf | sed s/L/Wl,-rpath,/)
@@ -824,13 +825,16 @@ endif
 LIBS_PROTOBUF = protobuf
 LIBS_PROTOC = protoc protobuf
 
-HOST_LDLIBS_PROTOC += $(addprefix -l, $(LIBS_PROTOC))
+#HOST_LDLIBS_PROTOC += $(addprefix -l, $(LIBS_PROTOC))
+HOST_LDLIBS_PROTOC = $(shell $(PKG_CONFIG) --libs-only-L protobuf | sed s/-L//)/libprotoc.so.14
 
 ifeq ($(PROTOBUF_PKG_CONFIG),true)
-LDLIBS_PROTOBUF += $(shell $(PKG_CONFIG) --libs-only-l protobuf)
+LDLIBS_PROTOBUF += $(shell $(PKG_CONFIG) --libs protobuf)
 else
 LDLIBS_PROTOBUF += $(addprefix -l, $(LIBS_PROTOBUF))
 endif
+
+HOST_LDLIBS_PROTOC += ${LDLIBS_PROTOBUF}
 
 # grpc++ .pc file
 PC_NAME = gRPC++
