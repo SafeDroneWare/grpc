@@ -826,7 +826,8 @@ LIBS_PROTOBUF = protobuf
 LIBS_PROTOC = protoc protobuf
 
 #HOST_LDLIBS_PROTOC += $(addprefix -l, $(LIBS_PROTOC))
-HOST_LDLIBS_PROTOC = $(shell $(PKG_CONFIG) --libs-only-L protobuf | sed s/-L//)/libprotoc.so.14
+HOST_LDLIBS_PROTOC = $(shell $(PKG_CONFIG) --libs-only-L protobuf | sed 's/-L//' | sed 's/\s*$$//')/libprotoc.so.14
+$(info 'Variable: ' $(HOST_LDLIBS_PROTOC))
 
 ifeq ($(PROTOBUF_PKG_CONFIG),true)
 LDLIBS_PROTOBUF += $(shell $(PKG_CONFIG) --libs protobuf)
